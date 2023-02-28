@@ -1,0 +1,97 @@
+import random
+
+# define a function to get a word from the user
+def get_word():
+    word = input("Enter a word to guess: ")
+    return word.lower()
+
+# define a function to draw the hangman based on the number of incorrect guesses
+def draw_hangman(incorrect_guesses):
+    stages = [  # list of hangman drawings for each stage of the game
+        '''
+           _________
+          |         |
+          |         O
+          |
+          |
+          |
+        ''',
+        '''
+           _________
+          |         |
+          |         O
+          |         |
+          |
+          |
+        ''',
+        '''
+           _________
+          |         |
+          |         O
+          |        /|
+          |
+          |
+        ''',
+        '''
+           _________
+          |         |
+          |         O
+          |        /|\\
+          |
+          |
+        ''',
+        '''
+           _________
+          |         |
+          |         O
+          |        /|\\
+          |        /
+          |
+        ''',
+        '''
+           _________
+          |         |
+          |         O
+          |        /|\\
+          |        / \\
+          |
+        '''
+    ]
+    print(stages[incorrect_guesses])
+
+# define a function to play the game
+def play_game(word):
+    guessed_letters = set()
+    guessed_word = '_' * len(word)
+    lives = 6  # start with one extra life to account for initial state
+    
+    while guessed_word != word and lives > 1:  # changed lives > 0 to account for initial state
+        print("Lives left:", lives-1)  # changed to print lives-1 instead of lives
+        draw_hangman(6-lives)  # pass the number of incorrect guesses to the draw_hangman function
+        print("Guessed word:", guessed_word)
+        letter = input("Guess a letter: ").lower()
+        if letter in guessed_letters:
+            print("You already guessed that letter. Try again.")
+        elif letter in word:
+            print("Good guess!")
+            guessed_letters.add(letter)
+            # update the guessed word with the new letter
+            guessed_word = ''.join([c if c in guessed_letters else '_' for c in word])
+        else:
+            print("Oops, wrong guess!")
+            guessed_letters.add(letter)
+            lives -= 1
+    
+    if guessed_word == word:
+        print("Congratulations, you guessed the word", word)
+    else:
+        print("Sorry, you ran out of lives. The word was", word)
+        draw_hangman(6-lives)  # draw the full hangman after the game ends
+
+# main function to run the game
+def main():
+    word = get_word()
+    play_game(word)
+
+if __name__ == '__main__':
+    main()

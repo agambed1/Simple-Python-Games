@@ -1,0 +1,62 @@
+import random
+import termcolor
+
+# Load words from file
+with open('/User/agambedi/Desktop/5-letter-words.txt', 'r') as f:
+    words = f.read().splitlines()
+
+# Pick a random word from the list
+chosen_word = random.choice(words)
+
+# Set up initial state
+lives = 6
+correct_letters = []
+wrong_letters = []
+
+# Play the game
+while lives > 0:
+    # Get user input
+    guess = input("Guess a 5-letter word: ")
+    
+    # Check if guess is valid
+    if len(guess) != 5 or not guess.isalpha():
+        print("Invalid input. Please enter a 5-letter word.")
+        continue
+    
+    # Check if guess is correct
+    if guess == chosen_word:
+        print(f"Congratulations, you guessed the word {chosen_word}!")
+        break
+    
+    # Check for correct letters in correct positions
+    correct_positions = []
+    for i in range(len(guess)):
+        if guess[i] == chosen_word[i]:
+            correct_positions.append(i)
+            correct_letters.append(guess[i])
+    
+    # Check for correct letters in wrong positions
+    wrong_positions = []
+    for i in range(len(guess)):
+        if guess[i] in chosen_word and i not in correct_positions and guess[i] not in wrong_letters:
+            wrong_positions.append(i)
+            wrong_letters.append(guess[i])
+    
+    # Print out feedback for guess
+    for i in range(len(guess)):
+        if i in correct_positions:
+            print(termcolor.colored(guess[i], 'green'), end='')
+        elif i in wrong_positions:
+            print(termcolor.colored(guess[i], 'yellow'), end='')
+        else:
+            print(termcolor.colored(guess[i], 'red'), end='')
+    print()
+    
+    # Decrease lives and print remaining lives
+    lives -= 1
+    print(f"{lives} lives remaining.")
+    
+    # End game if out of lives
+    if lives == 0:
+        print(f"Sorry, the word was {chosen_word}. Better luck next time!")
+        break
