@@ -1,0 +1,92 @@
+import pygame
+import random
+
+# Set up the game window
+pygame.init()
+screen_width = 640
+screen_height = 480
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("Snake Game")
+
+# Set up the game clock
+clock = pygame.time.Clock()
+
+# Define colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+
+# Define the block size and movement speed
+block_size = 10
+movement_speed = block_size
+
+# Define the font
+font = pygame.font.SysFont(None, 25)
+
+# Define the starting position of the snake
+start_x = screen_width / 2
+start_y = screen_height / 2
+
+# Define the starting length of the snake
+start_length = 5
+
+# Initialize the snake
+snake = []
+for i in range(start_length):
+    x = start_x - (i * block_size)
+    y = start_y
+    snake.append(pygame.Rect(x, y, block_size, block_size))
+
+# Define the initial direction of the snake
+direction = "RIGHT"
+
+# Define the initial score
+score = 0
+
+# Define the initial position of the food
+food_x = round(random.randrange(0, screen_width - block_size) / 10.0) * 10.0
+food_y = round(random.randrange(0, screen_height - block_size) / 10.0) * 10.0
+food = pygame.Rect(food_x, food_y, block_size, block_size)
+
+# Define the main game loop
+running = True
+while running:
+    # Handle events
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP and direction != "DOWN":
+                direction = "UP"
+            elif event.key == pygame.K_DOWN and direction != "UP":
+                direction = "DOWN"
+            elif event.key == pygame.K_LEFT and direction != "RIGHT":
+                direction = "LEFT"
+            elif event.key == pygame.K_RIGHT and direction != "LEFT":
+                direction = "RIGHT"
+
+    # Move the snake
+    head = snake[0]
+    if direction == "UP":
+        new_head = pygame.Rect(head.x, head.y - movement_speed, block_size, block_size)
+    elif direction == "DOWN":
+        new_head = pygame.Rect(head.x, head.y + movement_speed, block_size, block_size)
+    elif direction == "LEFT":
+        new_head = pygame.Rect(head.x - movement_speed, head.y, block_size, block_size)
+    elif direction == "RIGHT":
+        new_head = pygame.Rect(head.x + movement_speed, head.y, block_size, block_size)
+    snake.insert(0, new_head)
+
+    # Check for collision with food
+    if snake[0].colliderect(food):
+        food_x = round(random.randrange(0, screen_width - block_size) / 10.0) * 10.0
+        food_y = round(random.randrange(0, screen_height - block_size) / 10.0) * 10.0
+        food = pygame.Rect(food_x, food_y, block_size, block_size)
+        score += 1
+    else:
+        snake.pop()
+
+    # Check for collision with the snake's body
+    for block in snake[1:]:
+        if snake[0].colliderect(block):
+            running = False
